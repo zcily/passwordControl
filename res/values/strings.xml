@@ -2,4 +2,6 @@
 
     <string name="app_name">SZP_PasswordControl</string>
 
+    <string name="PassWordLocked">密码页被锁，禁止操作</string>
+    <string name="PassWordLockedDialogEnsure">确定</string>
 </resources>

@@ -1,6 +1,6 @@
 /*
  * This file is auto-generated.  DO NOT MODIFY.
- * Original file: F:\\myWorkSpace\\SZP_PasswordControl\\src\\com\\szp\\passwordControl\\IPasswordControl.aidl
+ * Original file: Z:\\SZP_PasswordControl\\src\\com\\szp\\passwordControl\\IPasswordControl.aidl
  */
 package com.szp.passwordControl;
 /*
@@ -69,6 +69,16 @@ reply.writeNoException();
 reply.writeInt(((_result)?(1):(0)));
 return true;
 }
+case TRANSACTION_isLocked:
+{
+data.enforceInterface(DESCRIPTOR);
+int _arg0;
+_arg0 = data.readInt();
+boolean _result = this.isLocked(_arg0);
+reply.writeNoException();
+reply.writeInt(((_result)?(1):(0)));
+return true;
+}
 }
 return super.onTransact(code, data, reply, flags);
 }
@@ -131,9 +141,31 @@ _data.recycle();
 }
 return _result;
 }
+/*
+	 * @hide
+	 */
+@Override public boolean isLocked(int type) throws android.os.RemoteException
+{
+android.os.Parcel _data = android.os.Parcel.obtain();
+android.os.Parcel _reply = android.os.Parcel.obtain();
+boolean _result;
+try {
+_data.writeInterfaceToken(DESCRIPTOR);
+_data.writeInt(type);
+mRemote.transact(Stub.TRANSACTION_isLocked, _data, _reply, 0);
+_reply.readException();
+_result = (0!=_reply.readInt());
+}
+finally {
+_reply.recycle();
+_data.recycle();
+}
+return _result;
+}
 }
 static final int TRANSACTION_checkPassWord = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
 static final int TRANSACTION_setPassWord = (android.os.IBinder.FIRST_CALL_TRANSACTION + 1);
+static final int TRANSACTION_isLocked = (android.os.IBinder.FIRST_CALL_TRANSACTION + 2);
 }
 /*
 	 * @hide
@@ -143,4 +175,8 @@ public boolean checkPassWord(int type, java.lang.String password) throws android
 	 * @hide
 	 */
 public boolean setPassWord(int type, java.lang.String password) throws android.os.RemoteException;
+/*
+	 * @hide
+	 */
+public boolean isLocked(int type) throws android.os.RemoteException;
 }

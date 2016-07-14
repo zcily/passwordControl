@@ -1,17 +1,21 @@
 package com.szp.passwordControl;
 
+import android.app.AlertDialog;
 import android.app.Service;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.provider.Settings;
+import android.view.View;
 import android.widget.Toast;
 
 public class PasswordControlService extends Service {
-    private final int SZP_PASSWORD_DOWNLOAD_TYPE = Settings.System.SZP_PASSWORD_DOWNLOAD_TYPE; 
-    private final int SZP_PASSWORD_ADMINISTRATOR_TYPE = Settings.System.SZP_PASSWORD_ADMINISTRATOR_TYPE; 
-    private final int SZP_PASSWORD_SUPER_TYPE = Settings.System.SZP_PASSWORD_SUPER_TYPE; 
-    private final int SZP_PASSWORD_CALL_ALL_TYPE = Settings.System.SZP_PASSWORD_CALL_ALL_TYPE;
+    public static final int SZP_PASSWORD_DOWNLOAD_TYPE = Settings.System.SZP_PASSWORD_DOWNLOAD_TYPE; 
+    public static final int SZP_PASSWORD_ADMINISTRATOR_TYPE = Settings.System.SZP_PASSWORD_ADMINISTRATOR_TYPE; 
+    public static final int SZP_PASSWORD_SUPER_TYPE = Settings.System.SZP_PASSWORD_SUPER_TYPE; 
+    public static final int SZP_PASSWORD_CALL_ALL_TYPE = Settings.System.SZP_PASSWORD_CALL_ALL_TYPE;
 	
     private final int LENTH_PASSWORD = 6;
     
@@ -48,35 +52,10 @@ public class PasswordControlService extends Service {
 			return false;
 		}
 		
-		private boolean isValidType(int type) {
-			boolean result = false;
-			
-			switch (type) {
-			case SZP_PASSWORD_DOWNLOAD_TYPE:
-			case SZP_PASSWORD_ADMINISTRATOR_TYPE:
-			case SZP_PASSWORD_SUPER_TYPE:
-			case SZP_PASSWORD_CALL_ALL_TYPE:
-				result = true;
-				break;
-			default:
-				break;
-			}
-			return result;
-		}
-		
-		private String getSettingStringFromType(int type) {
-			if(type == SZP_PASSWORD_DOWNLOAD_TYPE) {
-				return Settings.System.SZP_DOWNLOAD_PASSWORD;
-			} else if (type == SZP_PASSWORD_ADMINISTRATOR_TYPE) {
-				return Settings.System.SZP_ADMIN_PASSWORD; 
-			} else if (type == SZP_PASSWORD_SUPER_TYPE) {
-				return Settings.System.SZP_SUPER_PASSWORD;
-			} else if (type == SZP_PASSWORD_CALL_ALL_TYPE) {
-				return Settings.System.SZP_ALL_CALL_PASSWORD;
-			}
-			
-			// it can not come here.
-			return null;
+		@Override
+		public boolean isLocked(int type) throws RemoteException {
+			// TODO Auto-generated method stub
+			return false;
 		}
 		
 		private boolean checkPassWordIsRight(String origPassword,  String needCheckPassword) {
@@ -119,11 +98,57 @@ public class PasswordControlService extends Service {
 			}
 			return result;
 		}
+		
+		private void showPasswordLocked() {
+			AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+			builder.setMessage(R.string.PassWordLocked)
+					.setPositiveButton(R.string.PassWordLockedDialogEnsure, new OnClickListener() {
+						
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							// TODO Auto-generated method stub
+							dialog.dismiss();
+						}
+					});
+			
+			builder.create().show();
+		}
 	}
 	
 	@Override
 	public IBinder onBind(Intent intent) {
 		// TODO: Return the communication channel to the service.
 		return new PasswordControlImpl();
+	}
+	
+	public static boolean isValidType(int type) {
+		boolean result = false;
+		
+		switch (type) {
+		case SZP_PASSWORD_DOWNLOAD_TYPE:
+		case SZP_PASSWORD_ADMINISTRATOR_TYPE:
+		case SZP_PASSWORD_SUPER_TYPE:
+		case SZP_PASSWORD_CALL_ALL_TYPE:
+			result = true;
+			break;
+		default:
+			break;
+		}
+		return result;
+	}
+	
+	public static String getSettingStringFromType(int type) {
+		if(type == SZP_PASSWORD_DOWNLOAD_TYPE) {
+			return Settings.System.SZP_DOWNLOAD_PASSWORD;
+		} else if (type == SZP_PASSWORD_ADMINISTRATOR_TYPE) {
+			return Settings.System.SZP_ADMIN_PASSWORD; 
+		} else if (type == SZP_PASSWORD_SUPER_TYPE) {
+			return Settings.System.SZP_SUPER_PASSWORD;
+		} else if (type == SZP_PASSWORD_CALL_ALL_TYPE) {
+			return Settings.System.SZP_ALL_CALL_PASSWORD;
+		}
+		
+		// it can not come here.
+		return null;
 	}
 }

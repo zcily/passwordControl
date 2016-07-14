@@ -14,4 +14,8 @@ interface IPasswordControl {
 	 */
 	boolean setPassWord(int type, String password);
 
+	/*
+	 * @hide
+	 */
+	boolean isLocked(int type);
 }
