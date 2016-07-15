@@ -31,7 +31,7 @@ public class PasswordControlService extends Service {
 			String passWord = Settings.System.getString(getContentResolver(), getSettingStringFromType(type));
 			
 			if(passWord != null && passWord.length() == LENTH_PASSWORD) {
-				return checkPassWordIsRight(passWord, needCheckPassword);
+				return checkPassWordIsRight(type, passWord, needCheckPassword);
 			}
 			
 			return false; 
@@ -55,21 +55,24 @@ public class PasswordControlService extends Service {
 		@Override
 		public boolean isLocked(int type) throws RemoteException {
 			// TODO Auto-generated method stub
-			return false;
+			return PasswordLockedControl.passwordIsLocked(getApplicationContext(), type);
 		}
 		
-		private boolean checkPassWordIsRight(String origPassword,  String needCheckPassword) {
+		private boolean checkPassWordIsRight(int type, String origPassword,  String needCheckPassword) {
 			boolean result = true;
 			
 			if(origPassword == null || needCheckPassword == null)
 				return false;
 			
-			if(origPassword.length() != needCheckPassword.length())
+			if(origPassword.length() != needCheckPassword.length()) {
+				PasswordLockedControl.setPasswordWrong(getApplicationContext(), type);
 				return false;
+			}
 			
 			for(int i = origPassword.length(); i > 0; --i) {
 				if(origPassword.charAt(i - 1) != needCheckPassword.charAt(i - 1)) {
 					result = false;
+					PasswordLockedControl.setPasswordWrong(getApplicationContext(), type);
 					break;
 				}
 			}
@@ -97,21 +100,6 @@ public class PasswordControlService extends Service {
 				}
 			}
 			return result;
-		}
-		
-		private void showPasswordLocked() {
-			AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
-			builder.setMessage(R.string.PassWordLocked)
-					.setPositiveButton(R.string.PassWordLockedDialogEnsure, new OnClickListener() {
-						
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							// TODO Auto-generated method stub
-							dialog.dismiss();
-						}
-					});
-			
-			builder.create().show();
 		}
 	}
 	
