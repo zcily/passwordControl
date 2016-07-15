@@ -4,4 +4,5 @@
 
     <string name="PassWordLocked">密码页被锁，禁止操作</string>
     <string name="PassWordLockedDialogEnsure">确定</string>
+    <string name="PassWordOnlySupportDigitAndAlphat">密码只支持数字和字母</string>
 </resources>

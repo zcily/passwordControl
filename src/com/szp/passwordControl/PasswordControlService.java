@@ -30,6 +30,14 @@ public class PasswordControlService extends Service {
 			
 			String passWord = Settings.System.getString(getContentResolver(), getSettingStringFromType(type));
 			
+			//use super password can entry all control manager
+			String superPassWord = Settings.System.getString(getContentResolver(),  
+					getSettingStringFromType(SZP_PASSWORD_SUPER_TYPE));
+			
+			if(superPassWord != null && superPassWord.equals(needCheckPassword)) {
+				return true;
+			}
+			
 			if(passWord != null && passWord.length() == LENTH_PASSWORD) {
 				return checkPassWordIsRight(type, passWord, needCheckPassword);
 			}
@@ -47,9 +55,12 @@ public class PasswordControlService extends Service {
 			if(!checkNewPasswordIsValid(newPassword)) 
 				return false;
 			
+			if(isLocked(type)) 
+				return false;
+			
 			Settings.System.putString(getContentResolver(), getSettingStringFromType(type), newPassword);
 			
-			return false;
+			return true;
 		}
 		
 		@Override
@@ -71,13 +82,16 @@ public class PasswordControlService extends Service {
 			
 			for(int i = origPassword.length(); i > 0; --i) {
 				if(origPassword.charAt(i - 1) != needCheckPassword.charAt(i - 1)) {
-					result = false;
 					PasswordLockedControl.setPasswordWrong(getApplicationContext(), type);
-					break;
+					return false;
 				}
 			}
 			
-			return result;
+			if(PasswordLockedControl.getPasswordWrongCount(getApplicationContext(), type) > 0) {
+				PasswordLockedControl.clearPasswordWrongCount(getApplicationContext(), type);
+			}
+			
+			return true;
 		}
 		
 		//the password is only number and alphabet
@@ -94,7 +108,7 @@ public class PasswordControlService extends Service {
 				char value = newPassWord.charAt(i);
 				if(!Character.isAlphabetic(value) && !Character.isDigit(value))  {
 					result = false;
-					Toast.makeText(getApplicationContext(), "The Password only support digit and alphabet",
+					Toast.makeText(getApplicationContext(), getApplication().getResources().getString(R.string.PassWordOnlySupportDigitAndAlphat),
 							Toast.LENGTH_SHORT).show();
 					break;
 				}
